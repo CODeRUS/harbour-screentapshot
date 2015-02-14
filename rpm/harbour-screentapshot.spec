@@ -13,13 +13,12 @@ Name:       harbour-screentapshot
 %{!?qtc_make:%define qtc_make make}
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 Summary:    Screenshot by tapping on button
-Version:    0.1.1
+Version:    0.1.2
 Release:    1
 Group:      Qt/Qt
-License:    LICENSE
-URL:        http://example.org/
+License:    WTFPL
+URL:        https://github.com/CODeRUS/harbour-screentapshot
 Source0:    %{name}-%{version}.tar.bz2
-Source100:  harbour-screentapshot.yaml
 Requires:   sailfishsilica-qt5 >= 0.10.9
 BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
 BuildRequires:  pkgconfig(Qt5Core)

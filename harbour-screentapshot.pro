@@ -9,11 +9,11 @@ SOURCES += \
     src/viewhelper.cpp \
     src/main.cpp
 
+HEADERS += \
+    src/viewhelper.h \
+    src/screenshot.h
+
 OTHER_FILES += \
     rpm/harbour-screentapshot.spec \
     harbour-screentapshot.desktop \
     qml/main.qml
-
-HEADERS += \
-    src/viewhelper.h \
-    src/screenshot.h

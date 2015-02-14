@@ -1,14 +1,12 @@
 import QtQuick 2.1
 import Sailfish.Silica 1.0
-import harbour.coderus.screentapshot 1.0
+import harbour.screentapshot.screenshot 1.0
 
 Item {
     id: root
 
     width: Screen.width
     height: Screen.height
-
-    //Component.onCompleted: viewHelper.detachWindow()
 
     Screenshot {
         id: screenshot

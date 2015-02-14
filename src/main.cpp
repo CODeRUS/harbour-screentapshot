@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     QScopedPointer<ViewHelper> helper(new ViewHelper(view.data()));
     view->rootContext()->setContextProperty("viewHelper", helper.data());
 
-    qmlRegisterType<Screenshot>("harbour.coderus.screentapshot", 1, 0, "Screenshot");
+    qmlRegisterType<Screenshot>("harbour.screentapshot.screenshot", 1, 0, "Screenshot");
 
     QColor color;
     color.setRedF(0.0);
