@@ -16,4 +16,7 @@ HEADERS += \
 OTHER_FILES += \
     rpm/harbour-screentapshot.spec \
     harbour-screentapshot.desktop \
-    qml/main.qml
+    qml/main.qml \
+    qml/SourceProxy.qml \
+    qml/GaussianBlur.qml \
+    qml/GaussianDirectionalBlur.qml

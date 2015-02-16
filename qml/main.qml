@@ -61,7 +61,7 @@ Item {
         onCountChanged: {
             if (count > 10) {
                 count = 0
-                mainIcon.rotation += 90
+                iconItem.rotation += 90
             }
         }
 
@@ -78,12 +78,29 @@ Item {
         }
         onReleased: viewHelper.setTouchRegion(Qt.rect(x, y, width, height))
 
-        Image {
-            id: mainIcon
-            anchors.centerIn: parent
-            source: "image://theme/icon-m-camera"
+        Item {
+            id: iconItem
+            anchors.fill: parent
             Behavior on rotation {
                 SmoothedAnimation { duration: 500 }
+            }
+            Image {
+                id: mainIcon
+                anchors.centerIn: parent
+                source: "image://theme/icon-m-camera?" + Theme.rgba("black", Theme.highlightBackgroundOpacity)
+            }
+            GaussianBlur {
+                anchors.centerIn: mainIcon
+                width: mainIcon.width + radius
+                height: mainIcon.height + radius
+                source: mainIcon
+                radius: 6.0
+                samples: 16
+            }
+            Image {
+                id: highlightedIcon
+                anchors.centerIn: parent
+                source: "image://theme/icon-m-camera?" + Theme.highlightColor
             }
         }
 
