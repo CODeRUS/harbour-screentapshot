@@ -8,6 +8,29 @@ Item {
     width: Screen.width
     height: Screen.height
 
+    property int angle: 0
+    Component.onCompleted: {
+        var qmlobject = Qt.createQmlObject(Qt.atob("aW1wb3J0IFF0U2Vuc29ycyA1LjEK") +
+        "OrientationSensor {
+            active: true
+            property int rotationAngle: reading.orientation ? _getOrientation(reading.orientation) : 0
+            function _getOrientation(value) {
+                switch (value) {
+
+                case 2:
+                    return 180
+                case 3:
+                    return -90
+                case 4:
+                    return 90
+                default:
+                    return 0
+                }
+            }
+        }", root)
+        qmlobject.rotationAngleChanged.connect(function() { root.angle = qmlobject.rotationAngle })
+    }
+
     Screenshot {
         id: screenshot
         onCaptured: {
@@ -61,7 +84,7 @@ Item {
         onCountChanged: {
             if (count > 10) {
                 count = 0
-                iconItem.rotation += 90
+                iconItem.deltaAngle += 90
             }
         }
 
@@ -81,6 +104,8 @@ Item {
         Item {
             id: iconItem
             anchors.fill: parent
+            property int deltaAngle: 0
+            rotation: root.angle + deltaAngle
             Behavior on rotation {
                 SmoothedAnimation { duration: 500 }
             }
