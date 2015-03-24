@@ -1,6 +1,7 @@
 [Desktop Entry]
 Type=Application
 X-Nemo-Application-Type=silica-qt5
+X-Nemo-Single-Instance=no
 Icon=harbour-screentapshot
 Exec=harbour-screentapshot
 Name=ScreenTapShot

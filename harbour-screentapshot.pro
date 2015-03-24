@@ -4,6 +4,13 @@ QT += gui-private dbus
 CONFIG += sailfishapp link_pkgconfig
 PKGCONFIG += sailfishapp mlite5
 
+DEFINES += APP_VERSION=\\\"$$VERSION\\\"
+
+images.files = images
+images.path = /usr/share/harbour-screentapshot
+
+INSTALLS += images
+
 SOURCES += \
     src/screenshot.cpp \
     src/viewhelper.cpp \
@@ -16,7 +23,8 @@ HEADERS += \
 OTHER_FILES += \
     rpm/harbour-screentapshot.spec \
     harbour-screentapshot.desktop \
-    qml/main.qml \
-    qml/SourceProxy.qml \
-    qml/GaussianBlur.qml \
-    qml/GaussianDirectionalBlur.qml
+    qml/overlay.qml \
+    qml/settings.qml \
+    qml/CoverPage.qml \
+    qml/MainPage.qml \
+    qml/AboutPage.qml
