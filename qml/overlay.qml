@@ -11,6 +11,13 @@ Item {
 
     property string icon: "capture"
 
+    Connections {
+        target: viewHelper
+        onApplicationRemoval: {
+            removalOverlay.opacity = 1.0
+        }
+    }
+
     OrientationSensor {
         id: rotationSensor
         active: true
@@ -207,6 +214,165 @@ Item {
             properties: "height,width,opacity"
             to: 0
             duration: 500
+        }
+    }
+
+    Item {
+        id: removalOverlay
+
+        anchors.fill: parent
+        property bool active: opacity == 1.0
+        onActiveChanged: {
+            if (active)
+                viewHelper.setTouchRegion(Qt.rect(0, 0, Screen.width, Screen.height), false)
+        }
+        opacity: 0.0
+        Behavior on opacity {
+            SmoothedAnimation { duration: 1000 }
+        }
+
+        Rectangle {
+            anchors {
+                fill: removalContent
+                margins: -Theme.paddingLarge
+            }
+            color: Theme.highlightDimmerColor
+        }
+
+        Column {
+            id: removalContent
+
+            anchors {
+                centerIn: parent
+            }
+            width: Screen.width - Theme.paddingLarge * 2
+
+            spacing: Theme.paddingLarge
+
+            Row {
+                spacing: Theme.paddingLarge
+                height: iconContent.height
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                Label {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "Application removal"
+                }
+
+                Item {
+                    id: iconContent
+
+                    width: appIcon.sourceSize.width
+                    height: appIcon.sourceSize.height
+
+                    Image {
+                        id: appIcon
+                        anchors.centerIn: parent
+                        source: "/usr/share/icons/hicolor/86x86/apps/harbour-screentapshot.png"
+                    }
+
+                    Label {
+                        id: sadFace
+                        anchors.centerIn: parent
+                        text: ":("
+                        font.bold: true
+                        opacity: 0.0
+                    }
+
+                    Timer {
+                        interval: 3000
+                        running: removalOverlay.active
+                        repeat: true
+                        onTriggered: {
+                            if (iconContent.rotation == 0) {
+                                sadAnimation.start()
+                            }
+                            else {
+                                iconAnimation.start()
+                            }
+                        }
+                    }
+
+                    ParallelAnimation {
+                        id: sadAnimation
+                        NumberAnimation {
+                            target: iconContent
+                            property: "rotation"
+                            from: 0
+                            to: 360
+                            duration: 1000
+                        }
+                        NumberAnimation {
+                            target: appIcon
+                            property: "opacity"
+                            from: 1.0
+                            to: 0.0
+                            duration: 1000
+                        }
+                        NumberAnimation {
+                            target: sadFace
+                            property: "opacity"
+                            from: 0.0
+                            to: 1.0
+                            duration: 1000
+                        }
+                    }
+
+                    ParallelAnimation {
+                        id: iconAnimation
+                        NumberAnimation {
+                            target: iconContent
+                            property: "rotation"
+                            from: 360
+                            to: 0
+                            duration: 1000
+                        }
+                        NumberAnimation {
+                            target: appIcon
+                            property: "opacity"
+                            from: 0.0
+                            to: 1.0
+                            duration: 1000
+                        }
+                        NumberAnimation {
+                            target: sadFace
+                            property: "opacity"
+                            from: 1.0
+                            to: 0.0
+                            duration: 1000
+                        }
+                    }
+                }
+            }
+
+            Label {
+                width: parent.width
+                wrapMode: Text.Wrap
+                horizontalAlignment: Text.AlignHCenter
+
+                text: "I'm sorry You unsatisfied with my application. Please tell me why, and I will try to do my best to improve it."
+            }
+
+            Button {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "Leave comment in Jolla Store"
+                onClicked: {
+                    viewHelper.openStore()
+                    Qt.quit()
+                }
+            }
+
+            Button {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "No, thanks"
+                onClicked: Qt.quit()
+            }
+        }
+
+        MouseArea {
+            enabled: removalOverlay.active
+            anchors.fill: parent
+            onClicked: Qt.quit()
         }
     }
 }

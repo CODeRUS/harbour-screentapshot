@@ -19,11 +19,13 @@ class ViewHelper : public QObject
 public:
     explicit ViewHelper(QObject *parent = 0);
     void setDefaultRegion();
+
     Q_INVOKABLE void closeOverlay();
+    Q_INVOKABLE void openStore();
 
 public slots:
     void checkActive();
-    void setTouchRegion(const QRect &rect);
+    void setTouchRegion(const QRect &rect, bool setXY = true);
 
     Q_SCRIPTABLE Q_NOREPLY void show();
     Q_SCRIPTABLE Q_NOREPLY void exit();
@@ -33,6 +35,8 @@ signals:
     void lastYPosChanged();
     void screenshotAnimationChanged();
     void screenshotDelayChanged();
+
+    void applicationRemoval();
 
 private:
     void showOverlay();
@@ -53,6 +57,9 @@ private:
     MGConfItem *lastYPosConf;
     MGConfItem *screenshotAnimationConf;
     MGConfItem *screenshotDelayConf;
+
+private slots:
+    void onPackageStatusChanged(const QString &package, int status);
 
 };
 

@@ -24,10 +24,16 @@ void ViewHelper::closeOverlay()
     iface.call(QDBus::NoBlock, "exit");
 }
 
+void ViewHelper::openStore()
+{
+    QDBusInterface iface("com.jolla.jollastore", "/StoreClient", "com.jolla.jollastore");
+    iface.call(QDBus::NoBlock, "showApp", "harbour-screentapshot");
+}
+
 void ViewHelper::setDefaultRegion()
 {
-    setMouseRegion(QRegion(lastXPosConf->value(0).toInt(),
-                           lastYPosConf->value(0).toInt(),
+    setMouseRegion(QRegion(lastXPos(),
+                           lastYPos(),
                            80, 80));
 }
 
@@ -49,14 +55,17 @@ void ViewHelper::checkActive()
             return;
         }
     }
+    QDBusConnection::sessionBus().connect("", "", "com.jolla.jollastore", "packageStatusChanged", this, SLOT(onPackageStatusChanged(QString, int)));
 }
 
-void ViewHelper::setTouchRegion(const QRect &rect)
+void ViewHelper::setTouchRegion(const QRect &rect, bool setXY)
 {
     setMouseRegion(QRegion(rect));
 
-    setLastXPos(rect.x());
-    setLastYPos(rect.y());
+    if (setXY) {
+        setLastXPos(rect.x());
+        setLastYPos(rect.y());
+    }
 }
 
 void ViewHelper::show()
@@ -166,4 +175,11 @@ void ViewHelper::setScreenshotDelay(int value)
 {
     screenshotDelayConf->set(value);
     Q_EMIT screenshotDelayChanged();
+}
+
+void ViewHelper::onPackageStatusChanged(const QString &package, int status)
+{
+    if (package == "harbour-screentapshot" && status != 1) {
+        Q_EMIT applicationRemoval();
+    }
 }
