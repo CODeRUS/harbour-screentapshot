@@ -16,6 +16,9 @@ ViewHelper::ViewHelper(QObject *parent) :
     QObject::connect(screenshotAnimationConf, SIGNAL(valueChanged()), this, SIGNAL(screenshotAnimationChanged()));
     screenshotDelayConf = new MGConfItem("/apps/harbour-screentapshot/screenshotDelay", this);
     QObject::connect(screenshotDelayConf, SIGNAL(valueChanged()), this, SIGNAL(screenshotDelayChanged()));
+
+    view = NULL;
+    dummyView = NULL;
 }
 
 void ViewHelper::closeOverlay()
@@ -103,14 +106,16 @@ void ViewHelper::showOverlay()
     view->setClearBeforeRendering(true);
 
     view->setSource(SailfishApp::pathTo("qml/overlay.qml"));
-    view->show();
-    view->close();
     view->create();
     QPlatformNativeInterface *native = QGuiApplication::platformNativeInterface();
     native->setWindowProperty(view->handle(), QLatin1String("CATEGORY"), "notification");
     setDefaultRegion();
 
-    view->showFullScreen();
+    dummyView = new QQuickView();
+    dummyView->setSource(SailfishApp::pathTo("qml/empty.qml"));
+    dummyView->showFullScreen();
+
+    QObject::connect(dummyView, SIGNAL(activeChanged()), this, SLOT(onDummyChanged()));
 }
 
 void ViewHelper::showSettings()
@@ -181,5 +186,13 @@ void ViewHelper::onPackageStatusChanged(const QString &package, int status)
 {
     if (package == "harbour-screentapshot" && status != 1) {
         Q_EMIT applicationRemoval();
+    }
+}
+
+void ViewHelper::onDummyChanged()
+{
+    if (dummyView->isActive()) {
+        view->showNormal();
+        dummyView->close();
     }
 }

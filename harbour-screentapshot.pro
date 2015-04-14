@@ -1,8 +1,8 @@
 TARGET = harbour-screentapshot
 
-QT += gui-private dbus
-CONFIG += sailfishapp link_pkgconfig
-PKGCONFIG += sailfishapp mlite5
+QT += dbus gui-private
+CONFIG += link_pkgconfig sailfishapp
+PKGCONFIG += mlite5
 
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
@@ -27,4 +27,5 @@ OTHER_FILES += \
     qml/settings.qml \
     qml/CoverPage.qml \
     qml/MainPage.qml \
-    qml/AboutPage.qml
+    qml/AboutPage.qml \
+    qml/empty.qml

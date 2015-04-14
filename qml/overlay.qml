@@ -11,6 +11,10 @@ Item {
 
     property string icon: "capture"
 
+    Component.onCompleted: {
+        //dummy.close()
+    }
+
     Connections {
         target: viewHelper
         onApplicationRemoval: {
@@ -217,13 +221,13 @@ Item {
         }
     }
 
-    Item {
+    MouseArea {
         id: removalOverlay
 
         anchors.fill: parent
-        property bool active: opacity == 1.0
-        onActiveChanged: {
-            if (active)
+        enabled: opacity == 1.0
+        onEnabledChanged: {
+            if (enabled)
                 viewHelper.setTouchRegion(Qt.rect(0, 0, Screen.width, Screen.height), false)
         }
         opacity: 0.0
@@ -231,12 +235,21 @@ Item {
             SmoothedAnimation { duration: 1000 }
         }
 
-        Rectangle {
+        onClicked: {
+            Qt.quit()
+        }
+
+        MouseArea {
             anchors {
                 fill: removalContent
                 margins: -Theme.paddingLarge
             }
-            color: Theme.highlightDimmerColor
+            enabled: removalOverlay.enabled
+
+            Rectangle {
+                anchors.fill: parent
+                color: Theme.highlightDimmerColor
+            }
         }
 
         Column {
@@ -281,7 +294,7 @@ Item {
 
                     Timer {
                         interval: 3000
-                        running: removalOverlay.active
+                        running: removalOverlay.enabled
                         repeat: true
                         onTriggered: {
                             if (iconContent.rotation == 0) {
@@ -356,6 +369,7 @@ Item {
             Button {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: "Leave comment in Jolla Store"
+                enabled: removalOverlay.enabled
                 onClicked: {
                     viewHelper.openStore()
                     Qt.quit()
@@ -365,14 +379,9 @@ Item {
             Button {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: "No, thanks"
+                enabled: removalOverlay.enabled
                 onClicked: Qt.quit()
             }
-        }
-
-        MouseArea {
-            enabled: removalOverlay.active
-            anchors.fill: parent
-            onClicked: Qt.quit()
         }
     }
 }

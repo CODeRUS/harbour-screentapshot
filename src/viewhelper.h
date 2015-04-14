@@ -52,6 +52,7 @@ private:
     int screenshotDelay();
     void setScreenshotDelay(int value);
 
+    QQuickView *dummyView;
     QQuickView *view;
     MGConfItem *lastXPosConf;
     MGConfItem *lastYPosConf;
@@ -60,6 +61,7 @@ private:
 
 private slots:
     void onPackageStatusChanged(const QString &package, int status);
+    void onDummyChanged();
 
 };
 
