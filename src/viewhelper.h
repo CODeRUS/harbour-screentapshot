@@ -15,6 +15,8 @@ class ViewHelper : public QObject
     Q_PROPERTY(int lastYPos READ lastYPos WRITE setLastYPos NOTIFY lastYPosChanged)
     Q_PROPERTY(bool screenshotAnimation READ screenshotAnimation WRITE setScreenshotAnimation NOTIFY screenshotAnimationChanged)
     Q_PROPERTY(int screenshotDelay READ screenshotDelay WRITE setScreenshotDelay NOTIFY screenshotDelayChanged)
+    Q_PROPERTY(bool useSubfolder READ useSubfolder WRITE setUseSubfolder NOTIFY useSubfolderChanged)
+    Q_PROPERTY(QString orientationLock READ orientationLock NOTIFY orientationLockChanged)
 
 public:
     explicit ViewHelper(QObject *parent = 0);
@@ -35,6 +37,8 @@ signals:
     void lastYPosChanged();
     void screenshotAnimationChanged();
     void screenshotDelayChanged();
+    void useSubfolderChanged();
+    void orientationLockChanged();
 
     void applicationRemoval();
 
@@ -51,6 +55,9 @@ private:
     void setScreenshotAnimation(bool value);
     int screenshotDelay();
     void setScreenshotDelay(int value);
+    bool useSubfolder();
+    void setUseSubfolder(bool value);
+    QString orientationLock() const;
 
     QQuickView *dummyView;
     QQuickView *view;
@@ -58,10 +65,15 @@ private:
     MGConfItem *lastYPosConf;
     MGConfItem *screenshotAnimationConf;
     MGConfItem *screenshotDelayConf;
+    MGConfItem *useSubfolderConf;
+    MGConfItem *orientationLockConf;
 
 private slots:
     void onPackageStatusChanged(const QString &package, int status);
     void onDummyChanged();
+
+    void onViewDestroyed();
+    void onViewClosing(QQuickCloseEvent *);
 
 };
 

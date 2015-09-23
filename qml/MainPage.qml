@@ -58,6 +58,12 @@ Page {
                 font.pixelSize: Theme.fontSizeSmall
                 color: Theme.secondaryColor
             }
+
+            TextSwitch {
+                text: "Save in Screehshots subfolder"
+                checked: viewHelper.useSubfolder
+                onClicked: viewHelper.useSubfolder = checked
+            }
         }
     }
 }

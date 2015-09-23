@@ -25,24 +25,35 @@ Item {
     OrientationSensor {
         id: rotationSensor
         active: true
-        property int angle: reading.orientation ? _getOrientation(reading.orientation) : 0
+        property bool hack: if (reading.orientation) _getOrientation(reading.orientation)
+        property int sensorAngle: 0
+        property int angle: viewHelper.orientationLock == "dynamic"
+                            ? sensorAngle
+                            : (viewHelper.orientationLock == "portrait" ? 0 : 90)
         function _getOrientation(value) {
             switch (value) {
-
+            case 1:
+                sensorAngle = 0
+                break
             case 2:
-                return 180
+                sensorAngle = 180
+                break
             case 3:
-                return -90
+                sensorAngle = -90
+                break
             case 4:
-                return 90
+                sensorAngle = 90
+                break
             default:
-                return 0
+                return false
             }
+            return true
         }
     }
 
     Screenshot {
         id: screenshot
+        useSubfolder: viewHelper.useSubfolder
         onCaptured: {
             shotPreview.width = root.width
             shotPreview.height = root.height
@@ -122,8 +133,7 @@ Item {
             }
         }
 
-        onDoubleClicked: Qt.quit()
-        onClicked: {
+        function capture() {
             count += 1
             if (delayTimer.running) {
                 delayTimer.stop()
@@ -139,6 +149,13 @@ Item {
                     captureTimer.start()
                 }
             }
+        }
+
+        onDoubleClicked: {
+            Qt.quit()
+        }
+        onClicked: {
+            capture()
         }
         onReleased: viewHelper.setTouchRegion(Qt.rect(x, y, width, height))
 
@@ -208,7 +225,7 @@ Item {
     Image {
         id: shotPreview
 
-        anchors.centerIn: root
+        anchors.centerIn: parent
 
         opacity: 0.0
 

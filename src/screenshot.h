@@ -13,6 +13,8 @@ class Screenshot : public QObject
 public:
     explicit Screenshot(QObject *parent = 0);
 
+    Q_PROPERTY(bool useSubfolder READ useSubfolder WRITE setUseSubfolder NOTIFY useSubfolderChanged)
+
 public slots:
     void capture();
 
@@ -20,9 +22,15 @@ private slots:
     void onCaptureFinished(QDBusPendingCallWatcher *call);
 
 signals:
+    void useSubfolderChanged();
+
     void captured(const QString &path);
 
 private:
+    bool useSubfolder();
+    void setUseSubfolder(bool value);
+    bool _useSubfolder;
+
     QDBusInterface *iface;
     QString pendingScreenshot;
 };

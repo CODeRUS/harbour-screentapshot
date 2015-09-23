@@ -16,6 +16,10 @@ ViewHelper::ViewHelper(QObject *parent) :
     QObject::connect(screenshotAnimationConf, SIGNAL(valueChanged()), this, SIGNAL(screenshotAnimationChanged()));
     screenshotDelayConf = new MGConfItem("/apps/harbour-screentapshot/screenshotDelay", this);
     QObject::connect(screenshotDelayConf, SIGNAL(valueChanged()), this, SIGNAL(screenshotDelayChanged()));
+    useSubfolderConf = new MGConfItem("/apps/harbour-screentapshot/useSubfolder", this);
+    QObject::connect(useSubfolderConf, SIGNAL(valueChanged()), this, SIGNAL(useSubfolderChanged()));
+    orientationLockConf = new MGConfItem("/lipstick/orientationLock", this);
+    QObject::connect(orientationLockConf, SIGNAL(valueChanged()), this, SIGNAL(orientationLockChanged()));
 
     view = NULL;
     dummyView = NULL;
@@ -111,11 +115,16 @@ void ViewHelper::showOverlay()
     native->setWindowProperty(view->handle(), QLatin1String("CATEGORY"), "notification");
     setDefaultRegion();
 
+    QObject::connect(view, SIGNAL(destroyed()), this, SLOT(onViewDestroyed()));
+    QObject::connect(view, SIGNAL(closing(QQuickCloseEvent*)), this, SLOT(onViewClosing(QQuickCloseEvent*)));
+
     dummyView = new QQuickView();
+    dummyView->rootContext()->setContextProperty("dummyView", dummyView);
+    dummyView->rootContext()->setContextProperty("view", view);
     dummyView->setSource(SailfishApp::pathTo("qml/empty.qml"));
     dummyView->showFullScreen();
 
-    QObject::connect(dummyView, SIGNAL(activeChanged()), this, SLOT(onDummyChanged()));
+    //QObject::connect(dummyView, SIGNAL(activeChanged()), this, SLOT(onDummyChanged()));
 }
 
 void ViewHelper::showSettings()
@@ -182,6 +191,22 @@ void ViewHelper::setScreenshotDelay(int value)
     Q_EMIT screenshotDelayChanged();
 }
 
+bool ViewHelper::useSubfolder()
+{
+    return useSubfolderConf->value(false).toBool();
+}
+
+void ViewHelper::setUseSubfolder(bool value)
+{
+    useSubfolderConf->set(value);
+    Q_EMIT useSubfolderChanged();
+}
+
+QString ViewHelper::orientationLock() const
+{
+    return orientationLockConf->value("dynamic").toString();
+}
+
 void ViewHelper::onPackageStatusChanged(const QString &package, int status)
 {
     if (package == "harbour-screentapshot" && status != 1) {
@@ -192,7 +217,21 @@ void ViewHelper::onPackageStatusChanged(const QString &package, int status)
 void ViewHelper::onDummyChanged()
 {
     if (dummyView->isActive()) {
-        view->showNormal();
-        dummyView->close();
+        //QTimer::singleShot(1, dummyView, SLOT(close()));
+        QTimer::singleShot(1000, view, SLOT(showFullScreen()));
     }
+}
+
+void ViewHelper::onViewDestroyed()
+{
+    QObject::disconnect(view, 0, 0, 0);
+    view = NULL;
+    qGuiApp->quit();
+}
+
+void ViewHelper::onViewClosing(QQuickCloseEvent *)
+{
+    qDebug() << "View closed";
+    view->destroy();
+    view->deleteLater();
 }

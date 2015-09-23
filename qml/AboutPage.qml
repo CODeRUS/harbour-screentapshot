@@ -193,7 +193,7 @@ Page {
                 }
 
                 Label {
-                    text: "by coderus in 0x7DF"
+                    text: "by coderus in 0x7DE"
                     font.pixelSize: Theme.fontSizeMedium
                     width: parent.width
                     horizontalAlignment: Text.AlignHCenter
