@@ -26,7 +26,8 @@ public:
     Q_INVOKABLE void openStore();
 
 public slots:
-    void checkActive();
+    void checkActiveSettings();
+    void checkActiveOverlay();
     void setTouchRegion(const QRect &rect, bool setXY = true);
 
     Q_SCRIPTABLE Q_NOREPLY void show();
@@ -59,8 +60,8 @@ private:
     void setUseSubfolder(bool value);
     QString orientationLock() const;
 
-    QQuickView *dummyView;
-    QQuickView *view;
+    QQuickView *settingsView;
+    QQuickView *overlayView;
     MGConfItem *lastXPosConf;
     MGConfItem *lastYPosConf;
     MGConfItem *screenshotAnimationConf;
@@ -70,10 +71,9 @@ private:
 
 private slots:
     void onPackageStatusChanged(const QString &package, int status);
-    void onDummyChanged();
 
-    void onViewDestroyed();
-    void onViewClosing(QQuickCloseEvent *);
+    void onSettingsDestroyed();
+    void onSettingsClosing(QQuickCloseEvent*);
 
 };
 

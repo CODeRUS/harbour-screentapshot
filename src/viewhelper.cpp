@@ -21,14 +21,23 @@ ViewHelper::ViewHelper(QObject *parent) :
     orientationLockConf = new MGConfItem("/lipstick/orientationLock", this);
     QObject::connect(orientationLockConf, SIGNAL(valueChanged()), this, SIGNAL(orientationLockChanged()));
 
-    view = NULL;
-    dummyView = NULL;
+    overlayView = NULL;
+    settingsView = NULL;
 }
 
 void ViewHelper::closeOverlay()
 {
-    QDBusInterface iface("harbour.screentapshot.overlay", "/harbour/screentapshot/overlay", "harbour.screentapshot");
-    iface.call(QDBus::NoBlock, "exit");
+    if (overlayView) {
+        QDBusConnection::sessionBus().unregisterObject("/harbour/screentapshot/overlay");
+        QDBusConnection::sessionBus().unregisterService("harbour.screentapshot.overlay");
+        overlayView->close();
+        delete overlayView;
+        overlayView = NULL;
+    }
+    else {
+        QDBusInterface iface("harbour.screentapshot.overlay", "/harbour/screentapshot/overlay", "harbour.screentapshot");
+        iface.call(QDBus::NoBlock, "exit");
+    }
 }
 
 void ViewHelper::openStore()
@@ -44,25 +53,27 @@ void ViewHelper::setDefaultRegion()
                            80, 80));
 }
 
-void ViewHelper::checkActive()
+void ViewHelper::checkActiveSettings()
+{
+    bool newSettings = QDBusConnection::sessionBus().registerService("harbour.screentapshot.settings");
+    if (newSettings) {
+        showSettings();
+    }
+    else {
+        QDBusInterface iface("harbour.screentapshot.settings", "/harbour/screentapshot/settings", "harbour.screentapshot");
+        iface.call(QDBus::NoBlock, "show");
+        qGuiApp->exit(0);
+        return;
+    }
+}
+
+void ViewHelper::checkActiveOverlay()
 {
     bool inactive = QDBusConnection::sessionBus().registerService("harbour.screentapshot.overlay");
     if (inactive) {
         showOverlay();
+        QDBusConnection::sessionBus().connect("", "", "com.jolla.jollastore", "packageStatusChanged", this, SLOT(onPackageStatusChanged(QString, int)));
     }
-    else {
-        bool newSettings = QDBusConnection::sessionBus().registerService("harbour.screentapshot.settings");
-        if (newSettings) {
-            showSettings();
-        }
-        else {
-            QDBusInterface iface("harbour.screentapshot.settings", "/harbour/screentapshot/settings", "harbour.screentapshot");
-            iface.call(QDBus::NoBlock, "show");
-            qGuiApp->exit(0);
-            return;
-        }
-    }
-    QDBusConnection::sessionBus().connect("", "", "com.jolla.jollastore", "packageStatusChanged", this, SLOT(onPackageStatusChanged(QString, int)));
 }
 
 void ViewHelper::setTouchRegion(const QRect &rect, bool setXY)
@@ -77,8 +88,9 @@ void ViewHelper::setTouchRegion(const QRect &rect, bool setXY)
 
 void ViewHelper::show()
 {
-    if (view) {
-        view->raise();
+    if (settingsView) {
+        settingsView->raise();
+        checkActiveOverlay();
     }
 }
 
@@ -96,35 +108,25 @@ void ViewHelper::showOverlay()
     qGuiApp->setApplicationName("ScreenTapShot");
     qGuiApp->setApplicationDisplayName("ScreenTapShot");
 
-    view = SailfishApp::createView();
-    QObject::connect(view->engine(), SIGNAL(quit()), qGuiApp, SLOT(quit()));
-    view->setTitle("ScreenTapShot");
-    view->rootContext()->setContextProperty("viewHelper", this);
+    overlayView = SailfishApp::createView();
+    QObject::connect(overlayView->engine(), SIGNAL(quit()), qGuiApp, SLOT(quit()));
+    overlayView->setTitle("ScreenTapShot");
+    overlayView->rootContext()->setContextProperty("viewHelper", this);
 
     QColor color;
     color.setRedF(0.0);
     color.setGreenF(0.0);
     color.setBlueF(0.0);
     color.setAlphaF(0.0);
-    view->setColor(color);
-    view->setClearBeforeRendering(true);
+    overlayView->setColor(color);
+    overlayView->setClearBeforeRendering(true);
 
-    view->setSource(SailfishApp::pathTo("qml/overlay.qml"));
-    view->create();
+    overlayView->setSource(SailfishApp::pathTo("qml/overlay.qml"));
+    overlayView->create();
     QPlatformNativeInterface *native = QGuiApplication::platformNativeInterface();
-    native->setWindowProperty(view->handle(), QLatin1String("CATEGORY"), "notification");
+    native->setWindowProperty(overlayView->handle(), QLatin1String("CATEGORY"), "notification");
     setDefaultRegion();
-
-    QObject::connect(view, SIGNAL(destroyed()), this, SLOT(onViewDestroyed()));
-    QObject::connect(view, SIGNAL(closing(QQuickCloseEvent*)), this, SLOT(onViewClosing(QQuickCloseEvent*)));
-
-    dummyView = new QQuickView();
-    dummyView->rootContext()->setContextProperty("dummyView", dummyView);
-    dummyView->rootContext()->setContextProperty("view", view);
-    dummyView->setSource(SailfishApp::pathTo("qml/empty.qml"));
-    dummyView->showFullScreen();
-
-    //QObject::connect(dummyView, SIGNAL(activeChanged()), this, SLOT(onDummyChanged()));
+    overlayView->show();
 }
 
 void ViewHelper::showSettings()
@@ -134,17 +136,20 @@ void ViewHelper::showSettings()
     qGuiApp->setApplicationName("ScreenTapShot Settings");
     qGuiApp->setApplicationDisplayName("ScreenTapShot Settings");
 
-    view = SailfishApp::createView();
-    view->setTitle("ScreenTapShot Settings");
-    view->rootContext()->setContextProperty("viewHelper", this);
-    view->setSource(SailfishApp::pathTo("qml/settings.qml"));
-    view->showFullScreen();
+    settingsView = SailfishApp::createView();
+    settingsView->setTitle("ScreenTapShot Settings");
+    settingsView->rootContext()->setContextProperty("viewHelper", this);
+    settingsView->setSource(SailfishApp::pathTo("qml/settings.qml"));
+    settingsView->showFullScreen();
+
+    QObject::connect(settingsView, SIGNAL(destroyed()), this, SLOT(onSettingsDestroyed()));
+    QObject::connect(settingsView, SIGNAL(closing(QQuickCloseEvent*)), this, SLOT(onSettingsClosing(QQuickCloseEvent*)));
 }
 
 void ViewHelper::setMouseRegion(const QRegion &region)
 {
     QPlatformNativeInterface *native = QGuiApplication::platformNativeInterface();
-    native->setWindowProperty(view->handle(), QLatin1String("MOUSE_REGION"), region);
+    native->setWindowProperty(overlayView->handle(), QLatin1String("MOUSE_REGION"), region);
 }
 
 int ViewHelper::lastXPos()
@@ -204,7 +209,7 @@ void ViewHelper::setUseSubfolder(bool value)
 
 QString ViewHelper::orientationLock() const
 {
-    return orientationLockConf->value("dynamic").toString();
+    return orientationLockConf->value(QString("dynamic")).toString();
 }
 
 void ViewHelper::onPackageStatusChanged(const QString &package, int status)
@@ -214,24 +219,17 @@ void ViewHelper::onPackageStatusChanged(const QString &package, int status)
     }
 }
 
-void ViewHelper::onDummyChanged()
+void ViewHelper::onSettingsDestroyed()
 {
-    if (dummyView->isActive()) {
-        //QTimer::singleShot(1, dummyView, SLOT(close()));
-        QTimer::singleShot(1000, view, SLOT(showFullScreen()));
-    }
+    QObject::disconnect(settingsView, 0, 0, 0);
+    settingsView = NULL;
 }
 
-void ViewHelper::onViewDestroyed()
+void ViewHelper::onSettingsClosing(QQuickCloseEvent *)
 {
-    QObject::disconnect(view, 0, 0, 0);
-    view = NULL;
-    qGuiApp->quit();
-}
+    settingsView->destroy();
+    settingsView->deleteLater();
 
-void ViewHelper::onViewClosing(QQuickCloseEvent *)
-{
-    qDebug() << "View closed";
-    view->destroy();
-    view->deleteLater();
+    QDBusConnection::sessionBus().unregisterObject("/harbour/screentapshot/settings");
+    QDBusConnection::sessionBus().unregisterService("harbour.screentapshot.settings");
 }

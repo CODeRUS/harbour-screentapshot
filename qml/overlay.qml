@@ -11,10 +11,6 @@ Item {
 
     property string icon: "capture"
 
-    Component.onCompleted: {
-        //dummy.close()
-    }
-
     Connections {
         target: viewHelper
         onApplicationRemoval: {
@@ -27,7 +23,7 @@ Item {
         active: true
         property bool hack: if (reading.orientation) _getOrientation(reading.orientation)
         property int sensorAngle: 0
-        property int angle: viewHelper.orientationLock == "dynamic"
+        property int angle: viewHelper.orientationLock == "dynamic" || viewHelper.orientationLock == ""
                             ? sensorAngle
                             : (viewHelper.orientationLock == "portrait" ? 0 : 90)
         function _getOrientation(value) {

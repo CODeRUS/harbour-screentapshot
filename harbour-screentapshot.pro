@@ -27,5 +27,4 @@ OTHER_FILES += \
     qml/settings.qml \
     qml/CoverPage.qml \
     qml/MainPage.qml \
-    qml/AboutPage.qml \
-    qml/empty.qml
+    qml/AboutPage.qml
