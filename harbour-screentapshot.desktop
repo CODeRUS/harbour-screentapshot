@@ -5,4 +5,4 @@ X-Nemo-Single-Instance=no
 Icon=harbour-screentapshot
 Exec=harbour-screentapshot
 Name=ScreenTapShot
-
+Name[fi_FI]=Kuvakaappausnappi

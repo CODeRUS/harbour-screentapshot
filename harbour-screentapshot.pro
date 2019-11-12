@@ -27,4 +27,11 @@ OTHER_FILES += \
     qml/settings.qml \
     qml/CoverPage.qml \
     qml/MainPage.qml \
-    qml/AboutPage.qml
+    qml/AboutPage.qml \
+    translations/*.ts
+
+# to disable building translations every time, comment out the
+# following CONFIG line
+CONFIG += sailfishapp_i18n
+
+TRANSLATIONS += translations/harbour-screentapshot-fi.ts
