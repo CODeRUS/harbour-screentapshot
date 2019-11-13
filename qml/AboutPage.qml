@@ -177,7 +177,7 @@ Page {
                 spacing: Theme.paddingLarge
 
                 Label {
-                    text: "ScreenTapShot"
+                    text: qsTr("ScreenTapShot")
                     font.pixelSize: Theme.fontSizeMedium
                     width: parent.width
                     horizontalAlignment: Text.AlignHCenter
@@ -185,7 +185,7 @@ Page {
                 }
 
                 Label {
-                    text: "v" + Qt.application.version
+                    text: qsTr("v%1").arg(Qt.application.version)
                     font.pixelSize: Theme.fontSizeMedium
                     width: parent.width
                     horizontalAlignment: Text.AlignHCenter
@@ -193,7 +193,7 @@ Page {
                 }
 
                 Label {
-                    text: "by coderus in 0x7DF"
+                    text: qsTr("by coderus in 0x7DF")
                     font.pixelSize: Theme.fontSizeMedium
                     width: parent.width
                     horizontalAlignment: Text.AlignHCenter
@@ -201,7 +201,7 @@ Page {
                 }
 
                 Label {
-                    text: "Simple screenshot application with overlay button"
+                    text: qsTr("Simple screenshot application with overlay button")
                     font.pixelSize: Theme.fontSizeMedium
                     width: parent.width
                     horizontalAlignment: Text.AlignHCenter
@@ -209,7 +209,7 @@ Page {
                 }
 
                 Label {
-                    text: "We accept donations via"
+                    text: qsTr("We accept donations via")
                     font.pixelSize: Theme.fontSizeMedium
                     width: parent.width
                     horizontalAlignment: Text.AlignHCenter
@@ -217,7 +217,7 @@ Page {
                 }
 
                 Button {
-                    text: "PayPal"
+                    text: qsTr("PayPal")
                     width: 300
                     anchors.horizontalCenter: parent.horizontalCenter
                     onClicked: {
@@ -226,7 +226,7 @@ Page {
                 }
 
                 Label {
-                    text: "Me and my beloved would be grateful for every cent.\nYour donations makes application better and i can spend more time for development."
+                    text: qsTr("Me and my beloved would be grateful for every cent.\nYour donations makes application better and i can spend more time for development.")
                     font.pixelSize: Theme.fontSizeMedium
                     width: parent.width
                     horizontalAlignment: Text.AlignHCenter
@@ -234,7 +234,7 @@ Page {
                 }
 
                 Label {
-                    text: "Thanks to tortoisedoc for MOUSE_REGION trick."
+                    text: qsTr("Thanks to tortoisedoc for MOUSE_REGION trick.")
                     font.pixelSize: Theme.fontSizeMedium
                     width: parent.width
                     horizontalAlignment: Text.AlignHCenter

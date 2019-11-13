@@ -282,7 +282,7 @@ Item {
 
                 Label {
                     anchors.verticalCenter: parent.verticalCenter
-                    text: "Application removal"
+                    text: qsTr("Application removal")
                 }
 
                 Item {
@@ -376,12 +376,12 @@ Item {
                 wrapMode: Text.Wrap
                 horizontalAlignment: Text.AlignHCenter
 
-                text: "I'm sorry You unsatisfied with my application. Please tell me why, and I will try to do my best to improve it."
+                text: qsTr("I'm sorry You unsatisfied with my application. Please tell me why, and I will try to do my best to improve it.")
             }
 
             Button {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: "Leave comment in Jolla Store"
+                text: qsTr("Leave comment in Jolla Store")
                 enabled: removalOverlay.enabled
                 onClicked: {
                     viewHelper.openStore()
@@ -391,7 +391,7 @@ Item {
 
             Button {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: "No, thanks"
+                text: qsTr("No, thanks")
                 enabled: removalOverlay.enabled
                 onClicked: Qt.quit()
             }
