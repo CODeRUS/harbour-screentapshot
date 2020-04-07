@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+X-Nemo-Application-Type=silica-qt5
+X-Nemo-Single-Instance=no
+Icon=harbour-screentapshot2
+Exec=harbour-screentapshot2
+Name=ScreenTapShot
+Name[fi_FI]=Kuvakaappausnappi
+X-MeeGo-Logical-Id=ScreenTapShot
+X-MeeGo-Translation-Catalog=/usr/share/harbour-screentapshot2/translations/harbour-screentapshot2

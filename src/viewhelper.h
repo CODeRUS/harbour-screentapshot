@@ -70,7 +70,7 @@ private:
     MGConfItem *orientationLockConf;
 
 private slots:
-    void onPackageStatusChanged(const QString &package, int status);
+    void onPackageKitPackage(quint32 status, const QString &pkgId, const QString &);
 
     void onSettingsDestroyed();
     void onSettingsClosing(QQuickCloseEvent*);

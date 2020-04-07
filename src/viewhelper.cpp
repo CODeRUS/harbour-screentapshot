@@ -72,7 +72,13 @@ void ViewHelper::checkActiveOverlay()
     bool inactive = QDBusConnection::sessionBus().registerService("harbour.screentapshot.overlay");
     if (inactive) {
         showOverlay();
-        QDBusConnection::sessionBus().connect("", "", "com.jolla.jollastore", "packageStatusChanged", this, SLOT(onPackageStatusChanged(QString, int)));
+        QDBusConnection::systemBus().connect(
+            QString(),
+            QString(),
+            QStringLiteral("org.freedesktop.PackageKit.Transaction"),
+            QStringLiteral("Package"),
+            this,
+            SLOT(onPackageKitPackage(quint32, QString, QString)));
     }
 }
 
@@ -103,7 +109,7 @@ void ViewHelper::showOverlay()
 {
     QDBusConnection::sessionBus().registerObject("/harbour/screentapshot/overlay", this, QDBusConnection::ExportScriptableSlots);
 
-    qmlRegisterType<Screenshot>("harbour.screentapshot.screenshot", 1, 0, "Screenshot");
+    qmlRegisterType<Screenshot>("harbour.screentapshot2.screenshot", 1, 0, "Screenshot");
 
     qGuiApp->setApplicationName("ScreenTapShot");
     qGuiApp->setApplicationDisplayName("ScreenTapShot");
@@ -212,9 +218,9 @@ QString ViewHelper::orientationLock() const
     return orientationLockConf->value(QString("dynamic")).toString();
 }
 
-void ViewHelper::onPackageStatusChanged(const QString &package, int status)
+void ViewHelper::onPackageKitPackage(quint32 status, const QString &pkgId, const QString &)
 {
-    if (package == "harbour-screentapshot" && status != 1) {
+    if (status == 13 && pkgId.startsWith(QLatin1String("harbour-screentapshot2;"))) {
         Q_EMIT applicationRemoval();
     }
 }

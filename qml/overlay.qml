@@ -1,7 +1,7 @@
 import QtQuick 2.1
 import Sailfish.Silica 1.0
 import QtSensors 5.0
-import harbour.screentapshot.screenshot 1.0
+import harbour.screentapshot2.screenshot 1.0
 
 Item {
     id: root
@@ -103,8 +103,8 @@ Item {
         x: viewHelper.lastXPos
         y: viewHelper.lastYPos
 
-        width: 80
-        height: 80
+        width: Theme.itemSizeSmall
+        height: Theme.itemSizeSmall
 
         drag.target: touchArea
         drag.minimumX: 0
@@ -165,7 +165,8 @@ Item {
             }
             Image {
                 id: mainIcon
-                anchors.centerIn: parent
+                anchors.fill: parent
+                smooth: true
                 source: "../images/" + root.icon + "-blur.png"
                 property color color: Theme.rgba("black", Theme.highlightBackgroundOpacity)
                 layer.effect: ShaderEffect {
@@ -187,7 +188,8 @@ Item {
             }
             Image {
                 id: highlightedIcon
-                anchors.centerIn: parent
+                anchors.fill: parent
+                smooth: true
                 source: "../images/" + root.icon + ".png"
                 property color color: Theme.highlightColor
                 layer.effect: ShaderEffect {
@@ -294,7 +296,7 @@ Item {
                     Image {
                         id: appIcon
                         anchors.centerIn: parent
-                        source: "/usr/share/icons/hicolor/86x86/apps/harbour-screentapshot.png"
+                        source: "image://theme//harbour-screentapshot2"
                     }
 
                     Label {

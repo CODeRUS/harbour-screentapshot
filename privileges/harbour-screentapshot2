@@ -1,0 +1,2 @@
+# Tells invoker to run harbour-screentapshot2 as nemo:privileged
+/usr/bin/harbour-screentapshot2,
