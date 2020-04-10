@@ -41,8 +41,14 @@ INSTALLS += privileges
 CONFIG += sailfishapp_i18n
 
 TRANSLATIONS += \
+    translations/harbour-screentapshot2-es.ts \
     translations/harbour-screentapshot2-fi.ts \
-    translations/harbour-screentapshot2-ru.ts
+    translations/harbour-screentapshot2-pl.ts \
+    translations/harbour-screentapshot2-pt_BR.ts \
+    translations/harbour-screentapshot2-pt.ts \
+    translations/harbour-screentapshot2-ru.ts \
+    translations/harbour-screentapshot2-sv.ts \
+    translations/harbour-screentapshot2-zh_CN.ts
 
 appicon.profiles = \
     86x86 \

@@ -109,25 +109,25 @@ Settings</source>
 <context>
     <name>overlay</name>
     <message>
-        <location filename="../qml/overlay.qml" line="300"/>
+        <location filename="../qml/overlay.qml" line="254"/>
         <source>Application removal</source>
         <extracomment>Title of overlay visible while removing still launched application</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/overlay.qml" line="394"/>
+        <location filename="../qml/overlay.qml" line="348"/>
         <source>I&apos;m sorry You unsatisfied with my application. Please tell me why, and I will try to do my best to improve it.</source>
         <extracomment>Removal overlay text</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/overlay.qml" line="400"/>
+        <location filename="../qml/overlay.qml" line="354"/>
         <source>Leave comment in OpenRepos</source>
         <extracomment>Removal overlay button to open openrepos in browser</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/overlay.qml" line="412"/>
+        <location filename="../qml/overlay.qml" line="366"/>
         <source>No, thanks</source>
         <extracomment>Removal overlay button to close application</extracomment>
         <translation type="unfinished"></translation>
