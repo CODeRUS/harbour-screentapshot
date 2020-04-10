@@ -165,6 +165,7 @@ Page {
             width: flick.width
 
             PageHeader {
+                //: Header text
                 title: qsTr("About")
             }
 
@@ -177,6 +178,7 @@ Page {
                 spacing: Theme.paddingLarge
 
                 Label {
+                    //: Application name, affect icon text in the app grid
                     text: qsTranslate("", "ScreenTapShot")
                     font.pixelSize: Theme.fontSizeMedium
                     width: parent.width
@@ -201,6 +203,7 @@ Page {
                 }
 
                 Label {
+                    //: About text
                     text: qsTr("Simple screenshot application with overlay button")
                     font.pixelSize: Theme.fontSizeMedium
                     width: parent.width
@@ -209,6 +212,7 @@ Page {
                 }
 
                 Label {
+                    //: About thanks
                     text: qsTr("Thanks to tortoisedoc for MOUSE_REGION trick.")
                     font.pixelSize: Theme.fontSizeMedium
                     width: parent.width

@@ -284,6 +284,7 @@ Item {
 
                 Label {
                     anchors.verticalCenter: parent.verticalCenter
+                    //: Title of overlay visible while removing still launched application
                     text: qsTr("Application removal")
                 }
 
@@ -377,22 +378,25 @@ Item {
                 width: parent.width
                 wrapMode: Text.Wrap
                 horizontalAlignment: Text.AlignHCenter
-
+                //: Removal overlay text
                 text: qsTr("I'm sorry You unsatisfied with my application. Please tell me why, and I will try to do my best to improve it.")
             }
 
             Button {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: qsTr("Leave comment in Jolla Store")
+                //: Removal overlay button to open openrepos in browser
+                text: qsTr("Leave comment in OpenRepos")
                 enabled: removalOverlay.enabled
                 onClicked: {
-                    viewHelper.openStore()
+//                    viewHelper.openStore()
+                    Qt.openUrlExternally("https://openrepos.net/content/coderus/screentapshot2")
                     Qt.quit()
                 }
             }
 
             Button {
                 anchors.horizontalCenter: parent.horizontalCenter
+                //: Removal overlay button to close application
                 text: qsTr("No, thanks")
                 enabled: removalOverlay.enabled
                 onClicked: Qt.quit()
