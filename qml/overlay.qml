@@ -1,6 +1,7 @@
 import QtQuick 2.1
 import Sailfish.Silica 1.0
 import QtSensors 5.0
+import QtGraphicalEffects 1.0
 import harbour.screentapshot2.screenshot 1.0
 
 Item {
@@ -163,51 +164,16 @@ Item {
             Behavior on rotation {
                 SmoothedAnimation { duration: 500 }
             }
-            Image {
-                id: mainIcon
+            Rectangle {
                 anchors.fill: parent
-                smooth: true
-                source: "../images/" + root.icon + "-blur.png"
-                property color color: Theme.rgba("black", Theme.highlightBackgroundOpacity)
-                layer.effect: ShaderEffect {
-                    property color color: mainIcon.color
-
-                    fragmentShader: "
-                        varying mediump vec2 qt_TexCoord0;
-                        uniform highp float qt_Opacity;
-                        uniform lowp sampler2D source;
-                        uniform highp vec4 color;
-                        void main() {
-                            highp vec4 pixelColor = texture2D(source, qt_TexCoord0);
-                            gl_FragColor = vec4(mix(pixelColor.rgb/max(pixelColor.a, 0.00390625), color.rgb/max(color.a, 0.00390625), color.a) * pixelColor.a, pixelColor.a) * qt_Opacity;
-                        }
-                    "
-                }
-                layer.enabled: true
-                layer.samplerName: "source"
+                radius: Math.max(width, height) / 2
+                color: Theme.rgba(Theme.highlightBackgroundColor, Theme.highlightBackgroundOpacity)
             }
             Image {
                 id: highlightedIcon
-                anchors.fill: parent
+                anchors.centerIn: parent
                 smooth: true
-                source: "../images/" + root.icon + ".png"
-                property color color: Theme.highlightColor
-                layer.effect: ShaderEffect {
-                    property color color: highlightedIcon.color
-
-                    fragmentShader: "
-                        varying mediump vec2 qt_TexCoord0;
-                        uniform highp float qt_Opacity;
-                        uniform lowp sampler2D source;
-                        uniform highp vec4 color;
-                        void main() {
-                            highp vec4 pixelColor = texture2D(source, qt_TexCoord0);
-                            gl_FragColor = vec4(mix(pixelColor.rgb/max(pixelColor.a, 0.00390625), color.rgb/max(color.a, 0.00390625), color.a) * pixelColor.a, pixelColor.a) * qt_Opacity;
-                        }
-                    "
-                }
-                layer.enabled: true
-                layer.samplerName: "source"
+                source: "image://theme/icon-m-camera"
             }
         }
 
