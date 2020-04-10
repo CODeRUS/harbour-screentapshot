@@ -1,17 +1,10 @@
 Name:       harbour-screentapshot2
 
-# >> macros
-%define __provides_exclude_from ^%{_datadir}/.*$
-%define __requires_exclude ^libQt5.*$
-# << macros
-
-%{!?qtc_qmake:%define qtc_qmake %qmake}
 %{!?qtc_qmake5:%define qtc_qmake5 %qmake5}
 %{!?qtc_make:%define qtc_make make}
-%{?qtc_builddir:%define _builddir %qtc_builddir}
 
 Summary:    Screenshot by tapping on button
-Version:    0.3.0
+Version:    0.3.1
 Release:    1
 Group:      Qt/Qt
 License:    WTFPL
