@@ -3,9 +3,52 @@
 
 #include <QGuiApplication>
 #include <QtQml>
+
+#include <wayland-client.h>
 #include <qpa/qplatformnativeinterface.h>
 #include <sailfishapp.h>
 #include <QDebug>
+
+static void setWaylandInputRegion(QPlatformNativeInterface *wliface, QWindow *window, const QRegion &region)
+{
+    if (wl_compositor *wlcompositor = static_cast<wl_compositor *>(
+                wliface->nativeResourceForIntegration("compositor"))) {
+        if (wl_surface *wlsurface = static_cast<wl_surface *>(
+                    wliface->nativeResourceForWindow("surface", window))) {
+            wl_region *wlregion = wl_compositor_create_region(wlcompositor);
+
+            for (const QRect &rect : region.rects()) {
+                wl_region_add(wlregion, rect.x(), rect.y(), rect.width(), rect.height());
+            }
+
+            wl_surface_set_input_region(wlsurface, wlregion);
+            wl_region_destroy(wlregion);
+
+            wl_surface_commit(wlsurface);
+        }
+    }
+}
+
+static void setWaylandOpaqueRegion(QPlatformNativeInterface *wliface, QWindow *window, const QRegion &region)
+{
+    if (wl_compositor *wlcompositor = static_cast<wl_compositor *>(
+                wliface->nativeResourceForIntegration("compositor"))) {
+        if (wl_surface *wlsurface = static_cast<wl_surface *>(
+                    wliface->nativeResourceForWindow("surface", window))) {
+            wl_region *wlregion = wl_compositor_create_region(wlcompositor);
+
+            for (const QRect &rect : region.rects()) {
+                wl_region_add(wlregion, rect.x(), rect.y(), rect.width(), rect.height());
+            }
+
+            wl_surface_set_opaque_region(wlsurface, wlregion);
+            wl_region_destroy(wlregion);
+
+            wl_surface_commit(wlsurface);
+        }
+    }
+}
+
 
 ViewHelper::ViewHelper(QObject *parent) :
     QObject(parent)
@@ -25,11 +68,49 @@ ViewHelper::ViewHelper(QObject *parent) :
     settingsView = NULL;
 }
 
+bool ViewHelper::eventFilter(QObject *object, QEvent *event)
+{
+    if (object != overlayView) {
+        return false;
+    } else switch (event->type()) {
+    case QEvent::PlatformSurface: {
+        QPlatformSurfaceEvent *platformEvent = static_cast<QPlatformSurfaceEvent *>(event);
+
+        if (QPlatformWindow *handle = platformEvent->surfaceEventType() == QPlatformSurfaceEvent::SurfaceCreated
+                ? overlayView->handle()
+                : nullptr) {
+            QPlatformNativeInterface *native = QGuiApplication::platformNativeInterface();
+
+            native->setWindowProperty(handle, QStringLiteral("CATEGORY"), QStringLiteral("notification"));
+            setWaylandOpaqueRegion(native, overlayView, QRegion(0, 0, 0, 0));
+        }
+        return false;
+    }
+    case QEvent::DynamicPropertyChange: {
+        QDynamicPropertyChangeEvent *propertyEvent = static_cast<QDynamicPropertyChangeEvent *>(event);
+        if (QPlatformWindow *handle = propertyEvent->propertyName() == "MOUSE_REGION"
+                ? overlayView->handle()
+                : nullptr) {
+            QPlatformNativeInterface *native = QGuiApplication::platformNativeInterface();
+
+            auto mouseRegion = overlayView->property("MOUSE_REGION");
+            native->setWindowProperty(handle, QStringLiteral("MOUSE_REGION"), mouseRegion);
+            setWaylandInputRegion(native, overlayView, mouseRegion.value<QRegion>());
+        }
+        return false;
+    }
+    default:
+        return false;
+    }
+
+}
+
 void ViewHelper::closeOverlay()
 {
     if (overlayView) {
         QDBusConnection::sessionBus().unregisterObject("/harbour/screentapshot/overlay");
         QDBusConnection::sessionBus().unregisterService("harbour.screentapshot.overlay");
+        overlayView->removeEventFilter(this);
         overlayView->close();
         delete overlayView;
         overlayView = NULL;
@@ -115,6 +196,8 @@ void ViewHelper::showOverlay()
     qGuiApp->setApplicationDisplayName("ScreenTapShot");
 
     overlayView = SailfishApp::createView();
+    overlayView->installEventFilter(this);
+
     QObject::connect(overlayView->engine(), SIGNAL(quit()), qGuiApp, SLOT(quit()));
     overlayView->setTitle("ScreenTapShot");
     overlayView->rootContext()->setContextProperty("viewHelper", this);
@@ -129,8 +212,6 @@ void ViewHelper::showOverlay()
 
     overlayView->setSource(SailfishApp::pathTo("qml/overlay.qml"));
     overlayView->create();
-    QPlatformNativeInterface *native = QGuiApplication::platformNativeInterface();
-    native->setWindowProperty(overlayView->handle(), QLatin1String("CATEGORY"), "notification");
     setDefaultRegion();
     overlayView->show();
 }
@@ -154,8 +235,8 @@ void ViewHelper::showSettings()
 
 void ViewHelper::setMouseRegion(const QRegion &region)
 {
-    QPlatformNativeInterface *native = QGuiApplication::platformNativeInterface();
-    native->setWindowProperty(overlayView->handle(), QLatin1String("MOUSE_REGION"), region);
+    overlayView->setMask(region);
+    overlayView->setProperty("MOUSE_REGION", region);
 }
 
 int ViewHelper::lastXPos()
