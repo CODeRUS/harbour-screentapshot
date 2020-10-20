@@ -4,7 +4,7 @@ Name:       harbour-screentapshot2
 %{!?qtc_make:%define qtc_make make}
 
 Summary:    Screenshot by tapping on button
-Version:    0.3.1
+Version:    0.3.2
 Release:    1
 Group:      Qt/Qt
 License:    WTFPL
