@@ -14,6 +14,7 @@ BuildRequires:  pkgconfig(sailfishapp)
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Qml)
 BuildRequires:  pkgconfig(Qt5Quick)
+BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  desktop-file-utils
 BuildRequires:  sailfish-svg2png
 
